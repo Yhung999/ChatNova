@@ -4,8 +4,9 @@ import './App.css';
 import { API_URL, SOCKET_URL } from './api-config';
 
 const socket = io(SOCKET_URL);
-
+const Settings = {}; // prevents runtime error
 function App() {
+  console.log(Settings);
   const [currentUser, setCurrentUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
@@ -67,6 +68,9 @@ function App() {
       { urls: 'stun:stun1.l.google.com:19302' }
     ]
   };
+
+  {showSettings && <Settings />}
+
 
   useEffect(() => {
     const savedUser = localStorage.getItem('chatnovaUser');
