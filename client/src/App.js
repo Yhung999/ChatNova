@@ -763,9 +763,13 @@ function App() {
         </div>
 
         <div className="chats-list">
-          {[...contacts, ...groups]
-            .filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase()))
-            .map((chat) => (
+          {[
+  ...(Array.isArray(contacts) ? contacts : []),
+  ...(Array.isArray(groups) ? groups : [])
+]
+  .filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+  .map((chat) => (
+
             <div
               key={chat.id}
               className={`chat-item ${selectedChat?.id === chat.id ? 'active' : ''}`}
