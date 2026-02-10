@@ -4,9 +4,8 @@ import './App.css';
 import { API_URL, SOCKET_URL } from './api-config';
 
 const socket = io(SOCKET_URL);
-const Settings = {}; // prevents runtime error
+
 function App() {
-  console.log(Settings);
   const [currentUser, setCurrentUser] = useState(null);
   const [isLogin, setIsLogin] = useState(true);
   const [username, setUsername] = useState('');
@@ -49,7 +48,6 @@ function App() {
   const [showWallpaperPicker, setShowWallpaperPicker] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [localStream, setLocalStream] = useState(null);
-  const [remoteStream, setRemoteStream] = useState(null);
   const [peerConnection, setPeerConnection] = useState(null);
   
   const messagesEndRef = useRef(null);
@@ -68,9 +66,6 @@ function App() {
       { urls: 'stun:stun1.l.google.com:19302' }
     ]
   };
-
-  {showSettings && <Settings />}
-
 
   useEffect(() => {
     const savedUser = localStorage.getItem('chatnovaUser');
@@ -222,6 +217,7 @@ function App() {
       socket.off('incoming_call');
       socket.off('webrtc_signal');
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, selectedChat, peerConnection]);
 
   useEffect(() => {
@@ -309,7 +305,7 @@ function App() {
   const sendContactRequest = async (toUsername) => {
     const requestId = Date.now().toString();
     try {
-      await fetch('${API_URL}/api/contact-request', {
+      await fetch(`${API_URL}/api/contact-request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ from: currentUser.username, to: toUsername })
@@ -331,7 +327,7 @@ function App() {
 
   const respondToContactRequest = async (requestId, accept) => {
     try {
-      await fetch('${API_URL}/api/contact-request/respond', {
+      await fetch(`${API_URL}/api/contact-request/respond`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -391,7 +387,7 @@ function App() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('${API_URL}/upload', {
+      const response = await fetch(`${API_URL}/upload`, {
         method: 'POST',
         body: formData
       });
@@ -427,7 +423,7 @@ function App() {
     formData.append('username', currentUser.username);
 
     try {
-      const response = await fetch('${API_URL}/upload-profile', {
+      const response = await fetch(`${API_URL}/upload-profile`, {
         method: 'POST',
         body: formData
       });
@@ -438,7 +434,7 @@ function App() {
       setCurrentUser(updatedUser);
       localStorage.setItem('chatnovaUser', JSON.stringify(updatedUser));
       
-      await fetch('${API_URL}/api/update-profile', {
+      await fetch(`${API_URL}/api/update-profile`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: currentUser.username, avatar: data.url })
@@ -525,7 +521,6 @@ function App() {
     
     pc.ontrack = (event) => {
       if (event.streams && event.streams[0]) {
-        setRemoteStream(event.streams[0]);
         if (remoteVideoRef.current) {
           remoteVideoRef.current.srcObject = event.streams[0];
         }
@@ -617,8 +612,6 @@ function App() {
       peerConnection.close();
       setPeerConnection(null);
     }
-    
-    setRemoteStream(null);
   };
 
   const selectChat = (chat) => {
@@ -768,12 +761,11 @@ function App() {
 
         <div className="chats-list">
           {[
-  ...(Array.isArray(contacts) ? contacts : []),
-  ...(Array.isArray(groups) ? groups : [])
-]
-  .filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase()))
-  .map((chat) => (
-
+            ...(Array.isArray(contacts) ? contacts : []),
+            ...(Array.isArray(groups) ? groups : [])
+          ]
+            .filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+            .map((chat) => (
             <div
               key={chat.id}
               className={`chat-item ${selectedChat?.id === chat.id ? 'active' : ''}`}
