@@ -27,6 +27,7 @@ function App() {
   const [groupName, setGroupName] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [replyTo, setReplyTo] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [showSettings, setShowSettings] = useState(false);
   const [incomingCall, setIncomingCall] = useState(null);
   const [activeCall, setActiveCall] = useState(null);
